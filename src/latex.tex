@@ -1,0 +1,31 @@
+\documentclass[landscape]{article}
+\usepackage[T1]{fontenc}
+\usepackage{xcolor}
+\usepackage{lmodern}
+\usepackage{listings}
+\usepackage{geometry}
+\usepackage{textcomp}
+\geometry{a4paper,left=2.2cm,right=2cm,top=1cm,bottom=1.5cm}
+\lstset{language=[90]Fortran,
+  deletekeywords={name},
+  morekeywords={ifdef,elif,save,procedure,defined,selected_char_kind,class,pass},
+  basicstyle=\ttfamily,
+  keywordstyle=\sf\bfseries\sffamily\underbar,
+  commentstyle=\color{gray}\itshape\footnotesize,
+  frame=leftline,
+  framesep=4pt,
+  framerule=1pt,
+  numbers=left,
+  stepnumber=1, 
+  numberstyle=\small, 
+  numbersep=8pt,
+  upquote=true,
+  morecomment=[l]{!\ }% Comment only with space after !
+}
+\begin{document}
+
+{\centering\sf  stringifor\_string\_t.f90\\}
+\lstinputlisting{F:/Fortran/StringiFor/src/lib/stringifor_string_t.f90}
+% {\centering\sf  stringifor.f90\\}
+% \lstinputlisting{F:/Fortran/StringiFor-master/src/lib/stringifor.f90}
+\end{document}

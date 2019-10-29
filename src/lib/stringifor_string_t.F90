@@ -2,7 +2,7 @@
 module stringifor_string_t
 !< StringiFor, definition of `string` type.
 use, intrinsic :: iso_fortran_env, only : iostat_eor
-use befor64, only : b64_decode, b64_encode
+! use befor64, only : b64_decode, b64_encode
 use penf, only : I1P, I2P, I4P, I8P, R4P, R8P, R16P, str
 
 implicit none
@@ -10,7 +10,7 @@ private
 save
 ! expose StingiFor overloaded builtins and operators
 ! public :: adjustl, adjustr, count, index, len, len_trim, repeat, scan, trim, verify
-public :: adjustl, adjustr, count, index, len_trim, repeat, scan, trim, verify
+public :: adjustl, adjustr, count, index,len, len_trim, repeat, scan, trim, verify, iachar, ichar
 #ifndef __GFORTRAN__
 public :: assignment(=), operator(//), operator(.cat.), operator(==), &
           operator(/=), operator(<), operator(<=), operator(>=), operator(>)
@@ -23,207 +23,211 @@ integer, parameter :: CK = selected_char_kind('DEFAULT') !< Default character ki
 
 type :: string
   !< OOP designed string class.
-  private
-  character(kind=CK, len=:), allocatable :: raw !< Raw data.
-  contains
+   private
+   character(kind=CK, len=:), allocatable :: raw !< Raw data.
+contains
     ! public methods
     ! builtins replacements
-    procedure, pass(self) :: adjustl  => sadjustl                 !< Adjustl replacement.
-    procedure, pass(self) :: adjustr  => sadjustr                 !< Adjustr replacement.
-    procedure, pass(self) :: count    => scount                   !< Count replacement.
-    generic               :: index    => sindex_string_string, &
-                                         sindex_string_character  !< Index replacement.
-    procedure, pass(self) :: len      => slen                     !< Len replacement.
-    procedure, pass(self) :: len_trim => slen_trim                !< Len_trim replacement.
-    generic               :: repeat   => srepeat_string_string, &
-                                         srepeat_character_string !< Repeat replacement.
-    generic               :: scan     => sscan_string_string,    &
-                                         sscan_string_character   !< Scan replacement.
-    procedure, pass(self) :: trim     => strim                    !< Trim replacement.
-    generic               :: verify   => sverify_string_string, &
-                                         sverify_string_character !< Verify replacement.
-    ! auxiliary methods
-    procedure, pass(self) :: basedir          !< Return the base directory name of a string containing a file name.
-    procedure, pass(self) :: basename         !< Return the base file name of a string containing a file name.
-    procedure, pass(self) :: camelcase        !< Return a string with all words capitalized without spaces.
-    procedure, pass(self) :: capitalize       !< Return a string with its first character capitalized and the rest lowercased.
-    procedure, pass(self) :: chars            !< Return the raw characters data.
-    procedure, pass(self) :: decode           !< Decode string.
-    procedure, pass(self) :: encode           !< Encode string.
-    procedure, pass(self) :: escape           !< Escape backslashes (or custom escape character).
-    procedure, pass(self) :: extension        !< Return the extension of a string containing a file name.
-    procedure, pass(self) :: fill             !< Pad string on the left (or right) with zeros (or other char) to fill width.
-    procedure, pass(self) :: free             !< Free dynamic memory.
-    generic               :: glob =>         &
-                             glob_character, &
-                             glob_string      !< Glob search, finds all the pathnames matching a given pattern.
-    generic               :: insert =>      &
-                             insert_string, &
-                             insert_character !< Insert substring into string at a specified position.
-    generic               :: join =>       &
-                             join_strings, &
-                             join_characters  !< Return a string that is a join of an array of strings or characters.
-    procedure, pass(self) :: lower            !< Return a string with all lowercase characters.
-    procedure, pass(self) :: partition        !< Split string at separator and return the 3 parts (before, the separator and after).
-    procedure, pass(self) :: read_file        !< Read a file a single string stream.
-    procedure, pass(self) :: read_line        !< Read line (record) from a connected unit.
-    procedure, pass(self) :: read_lines       !< Read (all) lines (records) from a connected unit as a single ascii stream.
-    procedure, pass(self) :: replace          !< Return a string with all occurrences of substring old replaced by new.
-    procedure, pass(self) :: reverse          !< Return a reversed string.
-    procedure, pass(self) :: search           !< Search for *tagged* record into string.
-    procedure, pass(self) :: slice            !< Return the raw characters data sliced.
-    procedure, pass(self) :: snakecase        !< Return a string with all words lowercase separated by "_".
-    procedure, pass(self) :: split            !< Return a list of substring in the string, using sep as the delimiter string.
-    procedure, pass(self) :: split_chunked    !< Return a list of substring in the string, using sep as the delimiter string.
-    procedure, pass(self) :: startcase        !< Return a string with all words capitalized, e.g. title case.
-    procedure, pass(self) :: strip            !< Return a string with the leading and trailing characters removed.
-    procedure, pass(self) :: swapcase         !< Return a string with uppercase chars converted to lowercase and vice versa.
-    procedure, pass(self) :: tempname         !< Return a safe temporary name suitable for temporary file or directories.
-    generic               :: to_number =>   &
-                             to_integer_I1P,&
-                             to_integer_I2P,&
-                             to_integer_I4P,&
-                             to_integer_I8P,&
-                             to_real_R4P,   &
+   ! procedure, pass(self) :: char     => schar 
+   procedure, pass(self) :: iachr    => siachar 
+   procedure, pass(self) :: ichar    => sichar 
+   ! 
+   procedure, pass(self) :: adjustl  => sadjustl                 !< Adjustl replacement.
+   procedure, pass(self) :: adjustr  => sadjustr                 !< Adjustr replacement.
+   procedure, pass(self) :: count    => scount                   !< Count replacement.
+   generic               :: index    => sindex_string_string, &
+                                        sindex_string_character  !< Index replacement.
+   procedure, pass(self) :: len      => slen                     !< Len replacement.
+   procedure, pass(self) :: len_trim => slen_trim                !< Len_trim replacement.
+   generic               :: repeat   => srepeat_string_string, &
+                                        srepeat_character_string !< Repeat replacement.
+   generic               :: scan     => sscan_string_string,    &
+                                        sscan_string_character   !< Scan replacement.
+   procedure, pass(self) :: trim     => strim                    !< Trim replacement.
+   generic               :: verify   => sverify_string_string, &
+                                        sverify_string_character !< Verify replacement.
+   ! auxiliary methods
+   procedure, pass(self) :: basedir          !< Return the base directory name of a string containing a file name.
+   procedure, pass(self) :: basename         !< Return the base file name of a string containing a file name.
+   procedure, pass(self) :: camelcase        !< Return a string with all words capitalized without spaces.
+   procedure, pass(self) :: capitalize       !< Return a string with its first character capitalized and the rest lowercased.
+   procedure, pass(self) :: chars            !< Return the raw characters data.
+   ! procedure, pass(self) :: decode           !< Decode string.
+   ! procedure, pass(self) :: encode           !< Encode string.
+   procedure, pass(self) :: escape           !< Escape backslashes (or custom escape character).
+   procedure, pass(self) :: extension        !< Return the extension of a string containing a file name.
+   procedure, pass(self) :: fill             !< Pad string on the left (or right) with zeros (or other char) to fill width.
+   procedure, pass(self) :: free             !< Free dynamic memory.
+   generic               :: glob =>         &
+                            glob_character, &
+                            glob_string      !< Glob search, finds all the pathnames matching a given pattern.
+   generic               :: insert =>      &
+                            insert_string, &
+                            insert_character !< Insert substring into string at a specified position.
+   generic               :: join =>       &
+                            join_strings, &
+                            join_characters  !< Return a string that is a join of an array of strings or characters.
+   procedure, pass(self) :: lower            !< Return a string with all lowercase characters.
+   procedure, pass(self) :: partition        !< Split string at separator and return the 3 parts (before, the separator and after).
+   procedure, pass(self) :: read_file        !< Read a file a single string stream.
+   procedure, pass(self) :: read_line        !< Read line (record) from a connected unit.
+   procedure, pass(self) :: read_lines       !< Read (all) lines (records) from a connected unit as a single ascii stream.
+   procedure, pass(self) :: replace          !< Return a string with all occurrences of substring old replaced by new.
+   procedure, pass(self) :: reverse          !< Return a reversed string.
+   procedure, pass(self) :: search           !< Search for *tagged* record into string.
+   procedure, pass(self) :: slice            !< Return the raw characters data sliced.
+   procedure, pass(self) :: snakecase        !< Return a string with all words lowercase separated by "_".
+   procedure, pass(self) :: split            !< Return a list of substring in the string, using sep as the delimiter string.
+   procedure, pass(self) :: split_chunked    !< Return a list of substring in the string, using sep as the delimiter string.
+   procedure, pass(self) :: startcase        !< Return a string with all words capitalized, e.g. title case.
+   procedure, pass(self) :: strip            !< Return a string with the leading and trailing characters removed.
+   procedure, pass(self) :: swapcase         !< Return a string with uppercase chars converted to lowercase and vice versa.
+   procedure, pass(self) :: tempname         !< Return a safe temporary name suitable for temporary file or directories.
+   generic               :: to_number =>   &
+                            to_integer_I1P,&
+                            to_integer_I2P,&
+                            to_integer_I4P,&
+                            to_integer_I8P,&
+                            to_real_R4P,   &
 #ifdef _R16P_SUPPORTED
                              to_real_R8P,   &
                              to_real_R16P     !< Cast string to number.
 #else
                              to_real_R8P      !< Cast string to number.
 #endif
-    procedure, pass(self) :: unescape         !< Unescape double backslashes (or custom escaped character).
-    procedure, pass(self) :: unique           !< Reduce to one (unique) multiple occurrences of a substring into a string.
-    procedure, pass(self) :: upper            !< Return a string with all uppercase characters.
-    procedure, pass(self) :: write_file       !< Write a single string stream into file.
-    procedure, pass(self) :: write_line       !< Write line (record) to a connected unit.
-    procedure, pass(self) :: write_lines      !< Write lines (records) to a connected unit.
-    ! inquire methods
-    procedure, pass(self) :: end_with     !< Return true if a string ends with a specified suffix.
-    procedure, pass(self) :: is_allocated !< Return true if the string is allocated.
-    procedure, pass(self) :: is_digit     !< Return true if all characters in the string are digits.
-    procedure, pass(self) :: is_integer   !< Return true if the string contains an integer.
-    procedure, pass(self) :: is_lower     !< Return true if all characters in the string are lowercase.
-    procedure, pass(self) :: is_number    !< Return true if the string contains a number (real or integer).
-    procedure, pass(self) :: is_real      !< Return true if the string contains an real.
-    procedure, pass(self) :: is_upper     !< Return true if all characters in the string are uppercase.
-    procedure, pass(self) :: start_with   !< Return true if a string starts with a specified prefix.
-    ! operators
-    generic :: assignment(=) => string_assign_string,      &
-                                string_assign_character,   &
-                                string_assign_integer_I1P, &
-                                string_assign_integer_I2P, &
-                                string_assign_integer_I4P, &
-                                string_assign_integer_I8P, &
-                                string_assign_real_R4P,    &
+   procedure, pass(self) :: unescape         !< Unescape double backslashes (or custom escaped character).
+   procedure, pass(self) :: unique           !< Reduce to one (unique) multiple occurrences of a substring into a string.
+   procedure, pass(self) :: upper            !< Return a string with all uppercase characters.
+   procedure, pass(self) :: write_file       !< Write a single string stream into file.
+   procedure, pass(self) :: write_line       !< Write line (record) to a connected unit.
+   procedure, pass(self) :: write_lines      !< Write lines (records) to a connected unit.
+   ! inquire methods
+   procedure, pass(self) :: end_with     !< Return true if a string ends with a specified suffix.
+   procedure, pass(self) :: is_allocated !< Return true if the string is allocated.
+   procedure, pass(self) :: is_digit     !< Return true if all characters in the string are digits.
+   procedure, pass(self) :: is_integer   !< Return true if the string contains an integer.
+   procedure, pass(self) :: is_lower     !< Return true if all characters in the string are lowercase.
+   procedure, pass(self) :: is_number    !< Return true if the string contains a number (real or integer).
+   procedure, pass(self) :: is_real      !< Return true if the string contains an real.
+   procedure, pass(self) :: is_upper     !< Return true if all characters in the string are uppercase.
+   procedure, pass(self) :: start_with   !< Return true if a string starts with a specified prefix.
+   ! operators
+   generic :: assignment(=) => string_assign_string,      &
+                               string_assign_character,   &
+                               string_assign_integer_I1P, &
+                               string_assign_integer_I2P, &
+                               string_assign_integer_I4P, &
+                               string_assign_integer_I8P, &
+                               string_assign_real_R4P,    &
 #ifdef _R16P_SUPPORTED
-                                string_assign_real_R8P,    &
-                                string_assign_real_R16P             !< Assignment operator overloading.
+                               string_assign_real_R8P,    &
+                               string_assign_real_R16P             !< Assignment operator overloading.
 #else
-                                string_assign_real_R8P              !< Assignment operator overloading.
+                               string_assign_real_R8P              !< Assignment operator overloading.
 #endif
-    generic :: operator(//) => string_concat_string,    &
-                               string_concat_character, &
-                               character_concat_string              !< Concatenation operator overloading.
-    generic :: operator(.cat.) => string_concat_string_string,    &
-                                  string_concat_character_string, &
-                                  character_concat_string_string    !< Concatenation operator (string output) overloading.
-    generic :: operator(==) => string_eq_string,    &
-                               string_eq_character, &
-                               character_eq_string                  !< Equal operator overloading.
-    generic :: operator(/=) => string_ne_string,    &
-                               string_ne_character, &
-                               character_ne_string                  !< Not equal operator overloading.
-    generic :: operator(<) => string_lt_string,    &
-                              string_lt_character, &
-                              character_lt_string                   !< Lower than operator overloading.
-    generic :: operator(<=) => string_le_string,    &
-                               string_le_character, &
-                               character_le_string                  !< Lower equal than operator overloading.
-    generic :: operator(>=) => string_ge_string,    &
-                               string_ge_character, &
-                               character_ge_string                  !< Greater equal than operator overloading.
-    generic :: operator(>) => string_gt_string,    &
-                              string_gt_character, &
-                              character_gt_string                   !< Greater than operator overloading.
-    ! IO
+   generic :: operator(//) => string_concat_string,    &
+                              string_concat_character, &
+                              character_concat_string              !< Concatenation operator overloading.
+   generic :: operator(.cat.) => string_concat_string_string,    &
+                                 string_concat_character_string, &
+                                 character_concat_string_string    !< Concatenation operator (string output) overloading.
+   generic :: operator(==) => string_eq_string,    &
+                              string_eq_character, &
+                              character_eq_string                  !< Equal operator overloading.
+   generic :: operator(/=) => string_ne_string,    &
+                              string_ne_character, &
+                              character_ne_string                  !< Not equal operator overloading.
+   generic :: operator(<) => string_lt_string,    &
+                             string_lt_character, &
+                             character_lt_string                   !< Lower than operator overloading.
+   generic :: operator(<=) => string_le_string,    &
+                              string_le_character, &
+                              character_le_string                  !< Lower equal than operator overloading.
+   generic :: operator(>=) => string_ge_string,    &
+                              string_ge_character, &
+                              character_ge_string                  !< Greater equal than operator overloading.
+   generic :: operator(>) => string_gt_string,    &
+                             string_gt_character, &
+                             character_gt_string                   !< Greater than operator overloading.
+   ! IO
 #ifndef __GFORTRAN__
-    generic :: read(formatted) => read_formatted       !< Formatted input.
-    generic :: write(formatted) => write_formatted     !< Formatted output.
-    generic :: read(unformatted) => read_unformatted   !< Unformatted input.
-    generic :: write(unformatted) => write_unformatted !< Unformatted output.
+   generic :: read(formatted)    => read_formatted    !< Formatted input.
+   generic :: write(formatted)   => write_formatted   !< Formatted output.
+   generic :: read(unformatted)  => read_unformatted  !< Unformatted input.
+   generic :: write(unformatted) => write_unformatted !< Unformatted output.
 #endif
-    ! private methods
-    ! builtins replacements
-    procedure, private, pass(self) :: sindex_string_string     !< Index replacement.
-    procedure, private, pass(self) :: sindex_string_character  !< Index replacement.
-    procedure, private, pass(self) :: srepeat_string_string    !< Repeat replacement.
-    procedure, private, nopass     :: srepeat_character_string !< Repeat replacement.
-    procedure, private, pass(self) :: sscan_string_string      !< Scan replacement.
-    procedure, private, pass(self) :: sscan_string_character   !< Scan replacement.
-    procedure, private, pass(self) :: sverify_string_string    !< Verify replacement.
-    procedure, private, pass(self) :: sverify_string_character !< Verify replacement.
-    ! auxiliary methods
-    procedure, private, pass(self) :: glob_character   !< Glob search (character output).
-    procedure, private, pass(self) :: glob_string      !< Glob search (string output).
-    procedure, private, pass(self) :: insert_string    !< Insert substring into string at a specified position.
-    procedure, private, pass(self) :: insert_character !< Insert substring into string at a specified position.
-    procedure, private, pass(self) :: join_strings     !< Return join string of an array of strings.
-    procedure, private, pass(self) :: join_characters  !< Return join string of an array of characters.
-    procedure, private, pass(self) :: to_integer_I1P   !< Cast string to integer.
-    procedure, private, pass(self) :: to_integer_I2P   !< Cast string to integer.
-    procedure, private, pass(self) :: to_integer_I4P   !< Cast string to integer.
-    procedure, private, pass(self) :: to_integer_I8P   !< Cast string to integer.
-    procedure, private, pass(self) :: to_real_R4P      !< Cast string to real.
-    procedure, private, pass(self) :: to_real_R8P      !< Cast string to real.
-    procedure, private, pass(self) :: to_real_R16P     !< Cast string to real.
-    ! assignments
-    procedure, private, pass(lhs) :: string_assign_string      !< Assignment operator from string input.
-    procedure, private, pass(lhs) :: string_assign_character   !< Assignment operator from character input.
-    procedure, private, pass(lhs) :: string_assign_integer_I1P !< Assignment operator from integer input.
-    procedure, private, pass(lhs) :: string_assign_integer_I2P !< Assignment operator from integer input.
-    procedure, private, pass(lhs) :: string_assign_integer_I4P !< Assignment operator from integer input.
-    procedure, private, pass(lhs) :: string_assign_integer_I8P !< Assignment operator from integer input.
-    procedure, private, pass(lhs) :: string_assign_real_R4P    !< Assignment operator from real input.
-    procedure, private, pass(lhs) :: string_assign_real_R8P    !< Assignment operator from real input.
-    procedure, private, pass(lhs) :: string_assign_real_R16P   !< Assignment operator from real input.
-    ! concatenation operators
-    procedure, private, pass(lhs) :: string_concat_string           !< Concatenation with string.
-    procedure, private, pass(lhs) :: string_concat_character        !< Concatenation with character.
-    procedure, private, pass(rhs) :: character_concat_string        !< Concatenation with character (inverted).
-    procedure, private, pass(lhs) :: string_concat_string_string    !< Concatenation with string (string output).
-    procedure, private, pass(lhs) :: string_concat_character_string !< Concatenation with character (string output).
-    procedure, private, pass(rhs) :: character_concat_string_string !< Concatenation with character (inverted, string output).
-    ! logical operators
-    procedure, private, pass(lhs) :: string_eq_string    !< Equal to string logical operator.
-    procedure, private, pass(lhs) :: string_eq_character !< Equal to character logical operator.
-    procedure, private, pass(rhs) :: character_eq_string !< Equal to character (inverted) logical operator.
-    procedure, private, pass(lhs) :: string_ne_string    !< Not equal to string logical operator.
-    procedure, private, pass(lhs) :: string_ne_character !< Not equal to character logical operator.
-    procedure, private, pass(rhs) :: character_ne_string !< Not equal to character (inverted) logical operator.
-    procedure, private, pass(lhs) :: string_lt_string    !< Lower than to string logical operator.
-    procedure, private, pass(lhs) :: string_lt_character !< Lower than to character logical operator.
-    procedure, private, pass(rhs) :: character_lt_string !< Lower than to character (inverted) logical operator.
-    procedure, private, pass(lhs) :: string_le_string    !< Lower equal than to string logical operator.
-    procedure, private, pass(lhs) :: string_le_character !< Lower equal than to character logical operator.
-    procedure, private, pass(rhs) :: character_le_string !< Lower equal than to character (inverted) logical operator.
-    procedure, private, pass(lhs) :: string_ge_string    !< Greater equal than to string logical operator.
-    procedure, private, pass(lhs) :: string_ge_character !< Greater equal than to character logical operator.
-    procedure, private, pass(rhs) :: character_ge_string !< Greater equal than to character (inverted) logical operator.
-    procedure, private, pass(lhs) :: string_gt_string    !< Greater than to string logical operator.
-    procedure, private, pass(lhs) :: string_gt_character !< Greater than to character logical operator.
-    procedure, private, pass(rhs) :: character_gt_string !< Greater than to character (inverted) logical operator.
-    ! IO
+   ! private methods
+   ! builtins replacements
+   procedure, private, pass(self) :: sindex_string_string     !< Index replacement.
+   procedure, private, pass(self) :: sindex_string_character  !< Index replacement.
+   procedure, private, pass(self) :: srepeat_string_string    !< Repeat replacement.
+   procedure, private, nopass     :: srepeat_character_string !< Repeat replacement.
+   procedure, private, pass(self) :: sscan_string_string      !< Scan replacement.
+   procedure, private, pass(self) :: sscan_string_character   !< Scan replacement.
+   procedure, private, pass(self) :: sverify_string_string    !< Verify replacement.
+   procedure, private, pass(self) :: sverify_string_character !< Verify replacement.
+   ! auxiliary methods
+   procedure, private, pass(self) :: glob_character   !< Glob search (character output).
+   procedure, private, pass(self) :: glob_string      !< Glob search (string output).
+   procedure, private, pass(self) :: insert_string    !< Insert substring into string at a specified position.
+   procedure, private, pass(self) :: insert_character !< Insert substring into string at a specified position.
+   procedure, private, pass(self) :: join_strings     !< Return join string of an array of strings.
+   procedure, private, pass(self) :: join_characters  !< Return join string of an array of characters.
+   procedure, private, pass(self) :: to_integer_I1P   !< Cast string to integer.
+   procedure, private, pass(self) :: to_integer_I2P   !< Cast string to integer.
+   procedure, private, pass(self) :: to_integer_I4P   !< Cast string to integer.
+   procedure, private, pass(self) :: to_integer_I8P   !< Cast string to integer.
+   procedure, private, pass(self) :: to_real_R4P      !< Cast string to real.
+   procedure, private, pass(self) :: to_real_R8P      !< Cast string to real.
+   procedure, private, pass(self) :: to_real_R16P     !< Cast string to real.
+   ! assignments
+   procedure, private, pass(lhs) :: string_assign_string      !< Assignment operator from string input.
+   procedure, private, pass(lhs) :: string_assign_character   !< Assignment operator from character input.
+   procedure, private, pass(lhs) :: string_assign_integer_I1P !< Assignment operator from integer input.
+   procedure, private, pass(lhs) :: string_assign_integer_I2P !< Assignment operator from integer input.
+   procedure, private, pass(lhs) :: string_assign_integer_I4P !< Assignment operator from integer input.
+   procedure, private, pass(lhs) :: string_assign_integer_I8P !< Assignment operator from integer input.
+   procedure, private, pass(lhs) :: string_assign_real_R4P    !< Assignment operator from real input.
+   procedure, private, pass(lhs) :: string_assign_real_R8P    !< Assignment operator from real input.
+   procedure, private, pass(lhs) :: string_assign_real_R16P   !< Assignment operator from real input.
+   ! concatenation operators
+   procedure, private, pass(lhs) :: string_concat_string           !< Concatenation with string.
+   procedure, private, pass(lhs) :: string_concat_character        !< Concatenation with character.
+   procedure, private, pass(rhs) :: character_concat_string        !< Concatenation with character (inverted).
+   procedure, private, pass(lhs) :: string_concat_string_string    !< Concatenation with string (string output).
+   procedure, private, pass(lhs) :: string_concat_character_string !< Concatenation with character (string output).
+   procedure, private, pass(rhs) :: character_concat_string_string !< Concatenation with character (inverted, string output).
+   ! logical operators
+   procedure, private, pass(lhs) :: string_eq_string    !< Equal to string logical operator.
+   procedure, private, pass(lhs) :: string_eq_character !< Equal to character logical operator.
+   procedure, private, pass(rhs) :: character_eq_string !< Equal to character (inverted) logical operator.
+   procedure, private, pass(lhs) :: string_ne_string    !< Not equal to string logical operator.
+   procedure, private, pass(lhs) :: string_ne_character !< Not equal to character logical operator.
+   procedure, private, pass(rhs) :: character_ne_string !< Not equal to character (inverted) logical operator.
+   procedure, private, pass(lhs) :: string_lt_string    !< Lower than to string logical operator.
+   procedure, private, pass(lhs) :: string_lt_character !< Lower than to character logical operator.
+   procedure, private, pass(rhs) :: character_lt_string !< Lower than to character (inverted) logical operator.
+   procedure, private, pass(lhs) :: string_le_string    !< Lower equal than to string logical operator.
+   procedure, private, pass(lhs) :: string_le_character !< Lower equal than to character logical operator.
+   procedure, private, pass(rhs) :: character_le_string !< Lower equal than to character (inverted) logical operator.
+   procedure, private, pass(lhs) :: string_ge_string    !< Greater equal than to string logical operator.
+   procedure, private, pass(lhs) :: string_ge_character !< Greater equal than to character logical operator.
+   procedure, private, pass(rhs) :: character_ge_string !< Greater equal than to character (inverted) logical operator.
+   procedure, private, pass(lhs) :: string_gt_string    !< Greater than to string logical operator.
+   procedure, private, pass(lhs) :: string_gt_character !< Greater than to character logical operator.
+   procedure, private, pass(rhs) :: character_gt_string !< Greater than to character (inverted) logical operator.
+   ! IO
 #ifndef __GFORTRAN__
-    procedure, private, pass(dtv) :: read_formatted                !< Formatted input.
-    procedure, private, pass(dtv) :: read_delimited                !< Read a delimited input.
-    procedure, private, pass(dtv) :: read_undelimited              !< Read an undelimited input.
-    procedure, private, pass(dtv) :: read_undelimited_listdirected !< Read an undelimited list directed input.
-    procedure, private, pass(dtv) :: write_formatted               !< Formatted output.
-    procedure, private, pass(dtv) :: read_unformatted              !< Unformatted input.
-    procedure, private, pass(dtv) :: write_unformatted             !< Unformatted output.
+   procedure, private, pass(dtv) :: read_formatted                !< Formatted input.
+   procedure, private, pass(dtv) :: read_delimited                !< Read a delimited input.
+   procedure, private, pass(dtv) :: read_undelimited              !< Read an undelimited input.
+   procedure, private, pass(dtv) :: read_undelimited_listdirected !< Read an undelimited list directed input.
+   procedure, private, pass(dtv) :: write_formatted               !< Formatted output.
+   procedure, private, pass(dtv) :: read_unformatted              !< Unformatted input.
+   procedure, private, pass(dtv) :: write_unformatted             !< Unformatted output.
 #endif
-    ! miscellanea
-    procedure, private, pass(self) :: replace_one_occurrence !< Replace the first occurrence of substring old by new.
+   ! miscellanea
+   procedure, private, pass(self) :: replace_one_occurrence !< Replace the first occurrence of substring old by new.
 endtype string
 
 ! internal parameters
@@ -287,6 +291,16 @@ endinterface
 #endif
 
 ! builtin overloading
+interface iachar
+   !< Builtin iachar overloading.
+   module procedure siachar
+end interface iachar
+
+interface ichar
+   !< Builtin ichar overloading.
+   module procedure sichar
+end interface ichar
+
 interface adjustl
   !< Builtin adjustl overloading.
   module procedure sadjustl_character
@@ -307,10 +321,10 @@ interface index
   module procedure sindex_string_string, sindex_string_character, sindex_character_string
 endinterface index
 
-!interface len
-!  !< Builtin len overloading.
-!  module procedure slen
-!endinterface len
+interface len
+ !< Builtin len overloading.
+ module procedure slen
+endinterface len
 
 interface len_trim
   !< Builtin len_trim overloading.
@@ -355,6 +369,35 @@ contains
    endfunction string_
 
    ! builtins replacements
+   ! added by Jinze Li, pinkie.ljz@gmail.com
+   pure function sichar(self) result(i)
+      implicit none
+      CLASS(string), INTENT(IN) :: self 
+      INTEGER(I4P) :: i
+      ! 
+      if ( allocated(self%raw) ) then
+         i = ichar(self%raw,kind=I4P)
+      else 
+         i = huge(i)
+      end if
+   end function sichar
+
+   pure function siachar(self) result(i)
+      implicit none
+      CLASS(string), INTENT(IN) :: self 
+      INTEGER(I4P) :: i
+      ! 
+      if ( allocated(self%raw) ) then
+         i = ichar(self%raw,kind=I4P)
+      else 
+         i = huge(i)
+      end if
+   end function siachar  
+
+
+
+
+
    pure function sadjustl_character(s) result(adjusted)
    !< Left adjust a string by removing leading spaces (character output).
    !<
@@ -410,30 +453,30 @@ contains
    endfunction count_substring
 
    elemental function sindex_character_string(s, substring, back) result(i)
-   !< Return the position of the start of the first occurrence of string `substring` as a substring in `string`, counting from one.
-   !< If `substring` is not present in `string`, zero is returned. If the back argument is present and true, the return value is
-   !< the start of the last occurrence rather than the first.
-   !<
-   !<```fortran
-   !< type(string) :: string1
-   !< logical      :: test_passed(2)
-   !< string1 = 'llo'
-   !< test_passed(1) = index(s='Hello World Hello!', substring=string1)==index(string='Hello World Hello!', substring='llo')
-   !< test_passed(2) = index(s='Hello World Hello!', substring=string1, back=.true.)==index(string='Hello World Hello!', &
-   !<                                                                                       substring='llo', back=.true.)
-   !< print '(L1)', all(test_passed)
-   !<```
-   !=> T <<<
-   character(kind=CK, len=*), intent(in)           :: s         !< String.
-   type(string),              intent(in)           :: substring !< Searched substring.
-   logical,                   intent(in), optional :: back      !< Start of the last occurrence rather than the first.
-   integer                                         :: i         !< Result of the search.
+      !< Return the position of the start of the first occurrence of string `substring` as a substring in `string`, counting from one.
+      !< If `substring` is not present in `string`, zero is returned. If the back argument is present and true, the return value is
+      !< the start of the last occurrence rather than the first.
+      !<
+      !<```fortran
+      !< type(string) :: string1
+      !< logical      :: test_passed(2)
+      !< string1 = 'llo'
+      !< test_passed(1) = index(s='Hello World Hello!', substring=string1)==index(string='Hello World Hello!', substring='llo')
+      !< test_passed(2) = index(s='Hello World Hello!', substring=string1, back=.true.)==index(string='Hello World Hello!', &
+      !<                                                                                       substring='llo', back=.true.)
+      !< print '(L1)', all(test_passed)
+      !<```
+      !=> T <<<
+      character(kind=CK, len=*), intent(in)           :: s         !< String.
+      type(string),              intent(in)           :: substring !< Searched substring.
+      logical,                   intent(in), optional :: back      !< Start of the last occurrence rather than the first.
+      integer                                         :: i         !< Result of the search.
 
-   if (allocated(substring%raw)) then
-     i = index(string=s, substring=substring%raw, back=back)
-   else
-     i = 0
-   endif
+      if (allocated(substring%raw)) then
+      i = index(string=s, substring=substring%raw, back=back)
+      else
+      i = 0
+      endif
    endfunction sindex_character_string
 
    elemental function sscan_character_string(s, set, back) result(i)
@@ -491,150 +534,154 @@ contains
 
    ! builtins replacements
    elemental function sadjustl(self) result(adjusted)
-   !< Left adjust a string by removing leading spaces.
-   !<
-   !<```fortran
-   !< type(string) :: astring
-   !< astring = '   Hello World!'
-   !< print "(L1)", astring%adjustl()//''=='Hello World!   '
-   !<```
-   !=> T <<<
-   class(string), intent(in) :: self     !< The string.
-   type(string)              :: adjusted !< Adjusted string.
+      !< Left adjust a string by removing leading spaces.
+      !<
+      !<```fortran
+      !< type(string) :: astring
+      !< astring = '   Hello World!'
+      !< print "(L1)", astring%adjustl()//''=='Hello World!   '
+      !<```
+      !=> T <<<
+      class(string), intent(in) :: self     !< The string.
+      type(string)              :: adjusted !< Adjusted string.
 
-   adjusted = self
-   if (allocated(adjusted%raw)) adjusted%raw = adjustl(adjusted%raw)
+      adjusted = self
+      if (allocated(adjusted%raw)) adjusted%raw = adjustl(adjusted%raw)
    endfunction sadjustl
 
    elemental function sadjustr(self) result(adjusted)
-   !< Right adjust a string by removing leading spaces.
-   !<
-   !<```fortran
-   !< type(string) :: astring
-   !< astring = 'Hello World!   '
-   !< print "(L1)", astring%adjustr()//''=='   Hello World!'
-   !<```
-   !=> T <<<
-   class(string), intent(in) :: self     !< The string.
-   type(string)              :: adjusted !< Adjusted string.
+      !< Right adjust a string by removing leading spaces.
+      !<
+      !<```fortran
+      !< type(string) :: astring
+      !< astring = 'Hello World!   '
+      !< print "(L1)", astring%adjustr()//''=='   Hello World!'
+      !<```
+      !=> T <<<
+      class(string), intent(in) :: self     !< The string.
+      type(string)              :: adjusted !< Adjusted string.
 
-   adjusted = self
-   if (allocated(adjusted%raw)) adjusted%raw = adjustr(adjusted%raw)
+      adjusted = self
+      if (allocated(adjusted%raw)) adjusted%raw = adjustr(adjusted%raw)
    endfunction sadjustr
 
    elemental function scount(self, substring, ignore_isolated) result(No)
-   !< Count the number of occurences of a substring into a string.
-   !<
-   !< @note If `ignore_isolated` is set to true the eventual "isolated" occurences are ignored: an isolated occurrences are those
-   !< occurrences happening at the start of string (thus not having a left companion) or at the end of the string (thus not having a
-   !< right companion).
-   !<
-   !<```fortran
-   !< type(string) :: astring
-   !< logical      :: test_passed(4)
-   !< astring = '   Hello World  !    '
-   !< test_passed(1) = astring%count(substring=' ')==10
-   !< astring = 'Hello World  !    '
-   !< test_passed(2) = astring%count(substring=' ', ignore_isolated=.true.)==6
-   !< astring = '    Hello World  !'
-   !< test_passed(3) = astring%count(substring=' ', ignore_isolated=.true.)==6
-   !< astring = '   Hello World  !    '
-   !< test_passed(4) = astring%count(substring=' ', ignore_isolated=.true.)==8
-   !< print '(L1)', all(test_passed)
-   !<```
-   !=> T <<<
-   class(string), intent(in)              :: self             !< The string.
-   character(*),  intent(in)              :: substring        !< Substring.
-   logical,       intent(in), optional    :: ignore_isolated  !< Ignore "isolated" occurrences.
-   integer                                :: No               !< Number of occurrences.
-   logical                                :: ignore_isolated_ !< Ignore "isolated" occurrences, local variable.
-   integer                                :: c1               !< Counter.
-   integer                                :: c2               !< Counter.
+      !< Count the number of occurences of a substring into a string.
+      !<
+      !< @note If `ignore_isolated` is set to true the eventual "isolated" occurences are ignored: an isolated occurrences are those
+      !< occurrences happening at the start of string (thus not having a left companion) or at the end of the string (thus not having a
+      !< right companion).
+      !<
+      !<```fortran
+      !< type(string) :: astring
+      !< logical      :: test_passed(4)
+      !< astring = '   Hello World  !    '
+      !< test_passed(1) = astring%count(substring=' ')==10
+      !< astring = 'Hello World  !    '
+      !< test_passed(2) = astring%count(substring=' ', ignore_isolated=.true.)==6
+      !< astring = '    Hello World  !'
+      !< test_passed(3) = astring%count(substring=' ', ignore_isolated=.true.)==6
+      !< astring = '   Hello World  !    '
+      !< test_passed(4) = astring%count(substring=' ', ignore_isolated=.true.)==8
+      !< print '(L1)', all(test_passed)
+      !<```
+      !=> T <<<
+      class(string), intent(in)              :: self             !< The string.
+      character(*),  intent(in)              :: substring        !< Substring.
+      logical,       intent(in), optional    :: ignore_isolated  !< Ignore "isolated" occurrences.
+      integer                                :: No               !< Number of occurrences.
+      logical                                :: ignore_isolated_ !< Ignore "isolated" occurrences, local variable.
+      integer                                :: c1               !< Counter.
+      integer                                :: c2               !< Counter.
 #ifdef __GFORTRAN__
-   character(kind=CK, len=:), allocatable :: temporary        !< Temporary storage, workaround for GNU bug.
+      character(kind=CK, len=:), allocatable :: temporary        !< Temporary storage, workaround for GNU bug.
 #endif
 
-   No = 0
-   if (allocated(self%raw)) then
-      if (len(substring)>len(self%raw)) return
-      ignore_isolated_ = .false. ; if (present(ignore_isolated)) ignore_isolated_ = ignore_isolated
+      No = 0
+      if (allocated(self%raw)) then
+         if (len(substring)>len(self%raw)) return
+         ignore_isolated_ = .false. ; if (present(ignore_isolated)) ignore_isolated_ = ignore_isolated
 #ifdef __GFORTRAN__
-      temporary = self%raw
+         temporary = self%raw
 #endif
-      c1 = 1
-      do
+         c1 = 1
+         do
 #ifdef __GFORTRAN__
-         c2 = index(string=temporary(c1:), substring=substring)
+            c2 = index(string=temporary(c1:), substring=substring)
 #else
-         c2 = index(string=self%raw(c1:), substring=substring)
+            c2 = index(string=self%raw(c1:), substring=substring)
 #endif
-         if (c2==0) return
-         if (.not.ignore_isolated_) then
-            No = No + 1
-         else
-            if (.not.((c1==1.and.c2==1) .or. (c1==len(self%raw)-len(substring)+1))) then
+            if (c2==0) return
+            if (.not.ignore_isolated_) then
                No = No + 1
+            else
+               if (.not.((c1==1.and.c2==1) .or. (c1==len(self%raw)-len(substring)+1))) then
+                  No = No + 1
+               endif
             endif
-         endif
-         c1 = c1 + c2 - 1 + len(substring)
-      enddo
-   endif
+            c1 = c1 + c2 - 1 + len(substring)
+         enddo
+      endif
    endfunction scount
 
    elemental function sindex_string_string(self, substring, back) result(i)
-   !< Return the position of the start of the first occurrence of string `substring` as a substring in `string`, counting from one.
-   !< If `substring` is not present in `string`, zero is returned. If the back argument is present and true, the return value is
-   !< the start of the last occurrence rather than the first.
-   !<
-   !<```fortran
-   !< type(string) :: string1
-   !< type(string) :: string2
-   !< logical      :: test_passed(2)
-   !< string1 = 'Hello World Hello!'
-   !< string2 = 'llo'
-   !< test_passed(1) = string1%index(substring=string2)==index(string='Hello World Hello!', substring='llo')
-   !< test_passed(2) = string1%index(substring=string2, back=.true.)==index(string='Hello World Hello!', substring='llo', &
-   !<                                                                       back=.true.)
-   !< print '(L1)', all(test_passed)
-   !<```
-   !=> T <<<
-   class(string), intent(in)           :: self      !< The string.
-   type(string),  intent(in)           :: substring !< Searched substring.
-   logical,       intent(in), optional :: back      !< Start of the last occurrence rather than the first.
-   integer                             :: i         !< Result of the search.
+      !< Return the position of the start of the first occurrence of string `substring` as a substring in `string`, counting from one.
+      !< If `substring` is not present in `string`, zero is returned. If the back argument is present and true, the return value is
+      !< the start of the last occurrence rather than the first.
+      !<
+      !<```fortran
+      !< type(string) :: string1
+      !< type(string) :: string2
+      !< logical      :: test_passed(2)
+      !< string1 = 'Hello World Hello!'
+      !< string2 = 'llo'
+      !< test_passed(1) = string1%index(substring=string2)==index(string='Hello World Hello!', substring='llo')
+      !< test_passed(2) = string1%index(substring=string2, back=.true.)==index(string='Hello World Hello!', substring='llo', &
+      !<                                                                       back=.true.)
+      !< print '(L1)', all(test_passed)
+      !<```
+      !=> T <<<
+      class(string), intent(in)           :: self      !< The string.
+      type(string),  intent(in)           :: substring !< Searched substring.
+      logical,       intent(in), optional :: back      !< Start of the last occurrence rather than the first.
+      integer                             :: i         !< Result of the search.
 
-   if (allocated(self%raw)) then
-      i = index(string=self%raw, substring=substring%raw, back=back)
-   else
-      i = 0
-   endif
+      if (allocated(self%raw)) then
+         i = index(string=self%raw, substring=substring%raw, back=back)
+      else
+         i = 0
+      endif
    endfunction sindex_string_string
 
    elemental function sindex_string_character(self, substring, back) result(i)
-   !< Return the position of the start of the first occurrence of string `substring` as a substring in `string`, counting from one.
-   !< If `substring` is not present in `string`, zero is returned. If the back argument is present and true, the return value is
-   !< the start of the last occurrence rather than the first.
-   !<
-   !<```fortran
-   !< type(string) :: string1
-   !< logical      :: test_passed(2)
-   !< string1 = 'Hello World Hello!'
-   !< test_passed(1) = string1%index(substring='llo')==index(string='Hello World Hello!', substring='llo')
-   !< test_passed(2) = string1%index(substring='llo', back=.true.)==index(string='Hello World Hello!', substring='llo', back=.true.)
-   !< print '(L1)', all(test_passed)
-   !<```
-   !=> T <<<
-   class(string),             intent(in)           :: self      !< The string.
-   character(kind=CK, len=*), intent(in)           :: substring !< Searched substring.
-   logical,                   intent(in), optional :: back      !< Start of the last occurrence rather than the first.
-   integer                                         :: i         !< Result of the search.
+      !< Return the position of the start of the first occurrence of string `substring` as a substring in `string`, counting from one.
+      !< If `substring` is not present in `string`, zero is returned. If the back argument is present and true, the return value is
+      !< the start of the last occurrence rather than the first.
+      !<
+      !<```fortran
+      !< type(string) :: string1
+      !< logical      :: test_passed(2)
+      !< string1 = 'Hello World Hello!'
+      !< test_passed(1) = string1%index(substring='llo')==index(string='Hello World Hello!', substring='llo')
+      !< test_passed(2) = string1%index(substring='llo', back=.true.)==index(string='Hello World Hello!', substring='llo', back=.true.)
+      !< print '(L1)', all(test_passed)
+      !<```
+      !=> T <<<
+      class(string),             intent(in)           :: self      !< The string.
+      character(kind=CK, len=*), intent(in)           :: substring !< Searched substring.
+      logical,                   intent(in), optional :: back      !< Start of the last occurrence rather than the first.
+      integer                                         :: i         !< Result of the search.
 
-   if (allocated(self%raw)) then
-      i = index(string=self%raw, substring=substring, back=back)
-   else
-      i = 0
-   endif
+      if (allocated(self%raw)) then
+         i = index(string=self%raw, substring=substring, back=back)
+      else
+         i = 0
+      endif
    endfunction sindex_string_character
+
+
+
+
 
    elemental function slen(self) result(l)
    !< Return the length of a string.
@@ -983,56 +1030,56 @@ contains
    endif
    endfunction chars
 
-   elemental function decode(self, codec) result(decoded)
-   !< Return a string decoded accordingly the codec.
-   !<
-   !< @note Only BASE64 codec is currently available.
-   !<
-   !<```fortran
-   !< type(string) :: astring
-   !< astring = 'SG93IGFyZSB5b3U/'
-   !< print '(L1)', astring%decode(codec='base64')//''=='How are you?'
-   !<```
-   !=> T <<<
-   class(string),             intent(in) :: self    !< The string.
-   character(kind=CK, len=*), intent(in) :: codec   !< Encoding codec.
-   type(string)                          :: decoded !< Decoded string.
-   type(string)                          :: codec_u !< Encoding codec in upper case string.
+   ! elemental function decode(self, codec) result(decoded)
+   ! !< Return a string decoded accordingly the codec.
+   ! !<
+   ! !< @note Only BASE64 codec is currently available.
+   ! !<
+   ! !<```fortran
+   ! !< type(string) :: astring
+   ! !< astring = 'SG93IGFyZSB5b3U/'
+   ! !< print '(L1)', astring%decode(codec='base64')//''=='How are you?'
+   ! !<```
+   ! !=> T <<<
+   ! class(string),             intent(in) :: self    !< The string.
+   ! character(kind=CK, len=*), intent(in) :: codec   !< Encoding codec.
+   ! type(string)                          :: decoded !< Decoded string.
+   ! type(string)                          :: codec_u !< Encoding codec in upper case string.
 
-   if (allocated(self%raw)) then
-     decoded = self
-     codec_u = codec
-     select case(codec_u%upper()//'')
-     case('BASE64')
-       call b64_decode(code=self%raw, s=decoded%raw)
-     endselect
-     decoded = decoded%strip(remove_nulls=.true.)
-   endif
-   endfunction decode
+   ! if (allocated(self%raw)) then
+   !   decoded = self
+   !   codec_u = codec
+   !   select case(codec_u%upper()//'')
+   !   case('BASE64')
+   !     call b64_decode(code=self%raw, s=decoded%raw)
+   !   endselect
+   !   decoded = decoded%strip(remove_nulls=.true.)
+   ! endif
+   ! endfunction decode
 
-   elemental function encode(self, codec) result(encoded)
-   !< Return a string encoded accordingly the codec.
-   !<
-   !< @note Only BASE64 codec is currently available.
-   !<
-   !<```fortran
-   !< type(string) :: astring
-   !< astring = 'How are you?'
-   !< print '(L1)', astring%encode(codec='base64')//''=='SG93IGFyZSB5b3U/'
-   !<```
-   !=> T <<<
-   class(string),             intent(in) :: self    !< The string.
-   character(kind=CK, len=*), intent(in) :: codec   !< Encoding codec.
-   type(string)                          :: encoded !< Encoded string.
+   ! elemental function encode(self, codec) result(encoded)
+   ! !< Return a string encoded accordingly the codec.
+   ! !<
+   ! !< @note Only BASE64 codec is currently available.
+   ! !<
+   ! !<```fortran
+   ! !< type(string) :: astring
+   ! !< astring = 'How are you?'
+   ! !< print '(L1)', astring%encode(codec='base64')//''=='SG93IGFyZSB5b3U/'
+   ! !<```
+   ! !=> T <<<
+   ! class(string),             intent(in) :: self    !< The string.
+   ! character(kind=CK, len=*), intent(in) :: codec   !< Encoding codec.
+   ! type(string)                          :: encoded !< Encoded string.
 
-   if (allocated(self%raw)) then
-     encoded = codec
-     select case(encoded%upper()//'')
-     case('BASE64')
-       call b64_encode(s=self%raw, code=encoded%raw)
-     endselect
-   endif
-   endfunction encode
+   ! if (allocated(self%raw)) then
+   !   encoded = codec
+   !   select case(encoded%upper()//'')
+   !   case('BASE64')
+   !     call b64_encode(s=self%raw, code=encoded%raw)
+   !   endselect
+   ! endif
+   ! endfunction encode
 
    elemental function escape(self, to_escape, esc) result(escaped)
    !< Escape backslashes (or custom escape character).
